@@ -24,9 +24,9 @@ class SensorNetwork:
             for x in range(self.aoi_size):
                 # if sensor found, print center point as 'o'
                 if self.aoi[y][x]:
-                    print('O', end='')
+                    print('O ', end='')
                 else:
-                    print('-', end='')
+                    print('- ', end='')
             print()
 
 if __name__ == "__main__":
