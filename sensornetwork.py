@@ -19,12 +19,17 @@ class SensorNetwork:
         for i in range(samples):
             x, y = uniform(0, 50), uniform(0, 50)
 
-            for sensor in self.sensors:
-                if sensor.contains_point(x, y):
-                    points_covered += 1
-                    break
+            if self.is_covered(x, y):
+                points_covered += 1
 
         return 100 * (points_covered / samples)
+
+    def is_covered(self, x, y):
+        for sensor in self.sensors:
+            if sensor.contains_point(x, y):
+                return True
+
+        return False
 
     # find and return a list of all intersection points between sensors
     def find_intersections(self):
@@ -39,4 +44,5 @@ class SensorNetwork:
                 if i2 and i2 not in intersections:
                     intersections.append(i2)
         
-        return intersections
+        # filter intersections for only points that are within sensor range
+        return [(x, y) for x, y in intersections if self.is_covered(x, y)]

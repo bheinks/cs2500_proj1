@@ -8,15 +8,9 @@ class Sensor:
         self.e = e
         self.is_active = True
 
-    def area(self):
-        return math.pi * self.r**2
-
-    def circumference(self):
-        return 2 * math.pi * self.r
-
     # return True if point is inside radius using pythagorean theorem
     def contains_point(self, x, y):
-        return (x - self.x)**2 + (y - self.y)**2 <= self.r**2
+        return (x - self.x)**2 + (y - self.y)**2 < self.r**2
 
     # http://stackoverflow.com/a/3349134/798588
     def intersects(self, sensor):
