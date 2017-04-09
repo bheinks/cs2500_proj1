@@ -1,9 +1,9 @@
 import math
-from point import Point
 
 class Sensor:
-    def __init__(self, center, r, e):
-        self.center = center
+    def __init__(self, x, y, r, e):
+        self.x = x
+        self.y = y
         self.r = r
         self.e = e
         self.is_active = True
@@ -15,13 +15,13 @@ class Sensor:
         return 2 * math.pi * self.r
 
     # return True if point is inside radius using pythagorean theorem
-    def contains_point(self, point):
-        return math.sqrt((point.x - self.center.x)**2 + (point.y - self.center.y)**2) < self.r
+    def contains_point(self, x, y):
+        return (x - self.x)**2 + (y - self.y)**2 <= self.r**2
 
     # http://stackoverflow.com/a/3349134/798588
     def intersects(self, sensor):
-        x1, y1, r1 = self.center.x, self.center.y, self.r
-        x2, y2, r2 = sensor.center.x, sensor.center.y, sensor.r
+        x1, y1, r1 = self.x, self.y, self.r
+        x2, y2, r2 = sensor.x, sensor.y, sensor.r
         dx, dy = x2 - x1, y2 - y1
         d = math.sqrt(dx * dy + dy * dy)
 
@@ -40,7 +40,7 @@ class Sensor:
         ys1 = ym - h * dx / d
         ys2 = ym + h * dx / d
 
-        return Point(xs1, ys1), Point(xs2, ys2)
+        return (xs1, ys1), (xs2, ys2)
 
     def is_alive(self):
         return self.e > 0
