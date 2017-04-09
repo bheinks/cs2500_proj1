@@ -22,11 +22,11 @@ class Sensor:
     def intersects(self, sensor):
         x1, y1, r1 = self.x, self.y, self.r
         x2, y2, r2 = sensor.x, sensor.y, sensor.r
-        dx, dy = x2 - x1, y2 - y1
+        dx, dy = abs(x2 - x1), abs(y2 - y1)
         d = math.sqrt(dx * dy + dy * dy)
 
         # sensor radii do not intersect. return None for both points
-        if d > r1 + r2:
+        if d > r1 + r2 or d == 0:
             return None, None
 
         a = (r1**2 - r2**2 + d**2) / (2 * d)
