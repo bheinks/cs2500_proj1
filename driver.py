@@ -4,7 +4,16 @@ from sensornetwork import SensorNetwork
 from random import uniform
 from pprint import pprint
 
-sn = SensorNetwork(50, 50, 5, 300)
+sn = SensorNetwork(50, 50, 5, 300, 1000, False)
 
-#print("Coverage is {:.2f}%".format(sn.coverage(100000)))
-pprint(sn.find_intersections())
+#print(len(sn.find_intersections()))
+
+#for sensor in sn.sensors:
+#    print("Coverage is {:.2f}%".format(sn.coverage()))
+#    print(sn.is_redundant(sensor))
+
+#print(sum(s.is_active for s in sn.sensors), len(sn.sensors))
+
+init_coverage = sn.coverage()
+
+while sn.coverage()
