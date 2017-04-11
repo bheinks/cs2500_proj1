@@ -6,11 +6,14 @@ from pprint import pprint
 class SensorNetwork:
     def __init__(self, aoi_size, num_sensors, r, init_e, num_samples, is_active):
         # set of randomly positioned sensors arranged within AoI
+        self.num_sensors = num_sensors
         self.sensors = [Sensor(random.uniform(0, 50), random.uniform(0, 50), r, init_e, is_active)
                 for i in range(num_sensors)]
         self.redundant_sensors = []
         self.a_sensors = []
         self.init_e = init_e
+        self.r = r
+        self.is_active = is_active
 
         # set of randomly selected points in AoI to determine coverage via monte
         # carlo method
@@ -22,7 +25,7 @@ class SensorNetwork:
         points_covered = sum(self.is_covered(x, y) for x, y in self.mc_points)
         return 100 * (points_covered / len(self.mc_points))
 
-    def is_covered(self, x, y, only_active = False):
+    def is_covered(self, x, y):
         for sensor in self.sensors:
             if sensor.is_alive and sensor.is_active and sensor.contains_point(x, y):
                 return True
@@ -41,15 +44,9 @@ class SensorNetwork:
                 if i2 and i2 not in intersections:
                     intersections.append(i2)
         
-        # filter intersections for only points that are within sensor range
-        #return [(x, y) for x, y in intersections if self.is_covered(x, y)]
         return intersections
 
     def is_redundant(self, sensor):
-        # find the intersection points that are covered by this sensor
-        #points_covered = [(x, y) for x, y in self.find_intersections()
-        #        if sensor.contains_point(x, y)]
-
         # temporarily disable sensor to determine the difference in coverage
         cov = self.coverage()
         sensor.deactivate()
@@ -60,21 +57,7 @@ class SensorNetwork:
         sensor.activate()
         return False
 
-        # if a point is not otherwise covered, sensor is not redundant
-        #for s in self.sensors:
-        #    if s != sensor:
-        #        for x, y in points_covered:
-        #            if not s.contains_point(x, y):
-        #                break
-        #            
-        #            self.sensors.remove(sensor)
-        #            return True
-
-        #for x, y in points_covered:
-        #    if not self.is_covered(x, y):
-        #        sensor.is_active = True
-        #        return False
-
+    # reset sensors
     def reset(self, is_active):
         for sensor in self.sensors:
             sensor.is_active = is_active
@@ -96,6 +79,9 @@ class SensorNetwork:
 
     def active_sensors(self):
         return [s for s in self.sensors if s.is_active and s.is_alive]
+
+    def avg_energy(self):
+        return sum(s.e for s in self.sensors) / len(self.sensors)
 
     ###########################
     #                         #
@@ -125,14 +111,6 @@ class SensorNetwork:
         if self.coverage() == cov:
             sensor.deactivate()
 
-        #all_intersections = self.find_intersections(self.sensors)
-        #active_intersections = self.find_intersections(self.active_sensors())
-
-        #for x, y in list(set(all_intersections) - set(active_intersections)):
-        #    if sensor.contains_point(x, y):
-        #        sensor.activate()
-        #        break
-
         return self.active_sensors()
 
     def random_top_down(self):
@@ -155,6 +133,7 @@ class SensorNetwork:
 
         return self.active_sensors()
 
+    # sort active sensors by most intersection points
     def init_greedy(self):
         active_sensors = self.active_sensors()
         active_intersections = self.find_intersections(active_sensors)
@@ -162,10 +141,6 @@ class SensorNetwork:
 
     def greedy_top_down(self):
         self.round()
-
-        # sort active sensors by most intersection points
-
-        # filter out sensors we've already determined to not be redundant
 
         if not self.active_sensors():
             for s in self.redundant_sensors:
